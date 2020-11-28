@@ -13,9 +13,9 @@ const getPerfiles = (request, response) => {
 
   let query = 'SELECT * FROM perfil ORDER BY id_perfil ASC'
   pool.query(query)
-.then(res => {
+  .then(res => {
     response.status(200).json(res.rows)
-    })
+  })
   .catch(e => {
     response.status(500)
     console.error(e.stack)
