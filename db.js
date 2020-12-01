@@ -109,14 +109,14 @@ const createPartida = (request, response) => {
 /* [POST] Crear vinculos de la partida */
 const tiene = (request, response) => {
 
-  const { id_campeon, id_runas } = request.body
+  const { id_partida, id_runas } = request.body
 
-  let query = 'INSERT INTO tiene( id_campeon, id_runas ) VALUES ($1, $2)'
-  let values = [ id_campeon, id_runas]
+  let query = 'INSERT INTO tiene( id_partida, id_runas ) VALUES ($1, $2)'
+  let values = [ id_partida, id_runas]
   pool.query(query, values)
   .then(res => {
     response.status(200)
-    console.log('tiene', id_campeon + " <-> " + id_runas)
+    console.log('tiene', id_partida + " <-> " + id_runas)
     })
   .catch(e => {
     response.status(500)
@@ -127,15 +127,144 @@ const tiene = (request, response) => {
 
 const dispone = (request, response) => {
 
-  const { id_campeon, id_item } = request.body
+  const { id_partida, id_item } = request.body
 
-  let query = 'INSERT INTO dispone( id_campeon, id_item ) VALUES ($1, $2)'
-  let values = [ id_perfil, id_item]
+  let query = 'INSERT INTO dispone( id_partida, id_item ) VALUES ($1, $2)'
+  let values = [ id_partida, id_item]
   pool.query(query, values)
   .then(res => {
     response.status(200)
-    console.log('tiene', id_campeon + " <-> " + id_item)
+    console.log('tiene', id_partida + " <-> " + id_item)
     })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+
+/* Consultas hechas */
+
+/* [POST] Obtener el promedio de la duracion de las partidas entre distintas fechas */
+
+const getAVGPartidasDates = (request, response) => {
+
+  const { date1, date2 } = request.body
+
+  let query = "SELECT AVG(duracion) FROM partida WHERE fechayhora BETWEEN $1 AND $2"
+  let values = [ date1, date2 ]
+  pool.query(query, values)
+  .then(res => {
+    response.status(200).json(res.rows[0])
+    console.log("Promedio entre", date1 , "y", date2, res.rows[0])
+  })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+
+/* ¨[POST] Partidas mas jugadas con un campeon entre dos fechas por los profesionales */
+
+const mostPlayedChampByPros = (request, response) => {
+
+  const { date1, date2 } = request.body
+
+  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c, perfil AS z WHERE c.id_campeon = p.id_campeon AND p.id_perfil = z.id_perfil AND z.tipo = 'Profesional' AND p.fechayhora BETWEEN $1 AND $2 GROUP BY c.nombre ORDER BY count DESC LIMIT 1;"
+  let values = [ date1, date2 ]
+  
+  pool.query(query, values)
+  .then(res => {
+    response.status(200).json(res.rows[0])
+    console.log("Campeon más jugado por los pros", date1 , "y", date2, res.rows[0])
+  })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+/* [POST] Item más utilizado por un campeón */
+
+const mostUsedItemByChamp = (request, response) => {
+
+  const { champ } = request.body
+
+  let query = "SELECT count(i.id_item), i.id_item, i.nombre FROM partida as part, campeon as champ, dispone as d, item as i WHERE champ.nombre = $1 and d.id_partida = part.id_partida and i.id_item = d.id_item GROUP BY i.id_item ORDER BY count DESC LIMIT 1"
+  let values = [ champ ]
+  
+  pool.query(query, values)
+  .then(res => {
+    response.status(200).json(res.rows[0])
+    console.log("Item más usado por el champ", champ, res.rows[0])
+  })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+/* [POST] Runas mas usadas por un campeon */
+
+const mostUsedRunesByChamp = (request, response) => {
+
+  const { champ } = request.body
+
+  let query = "SELECT count(r.id_runas), r.id_runas, r.nombre FROM partida as part, campeon as champ, tiene as t, runas as r WHERE champ.nombre = $1 and t.id_partida = part.id_partida and r.id_runas = t.id_runas GROUP BY r.id_runas ORDER BY count DESC LIMIT 1"
+  let values = [ champ ]
+  
+  pool.query(query, values)
+  .then(res => {
+    response.status(200).json(res.rows[0])
+    console.log("Runa más usada por el champ", champ, res.rows[0])
+  })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+/* [POST] Campeon mas utilizado por un perfil */
+
+const mostUsedChampbyProfile = (request, response) => {
+
+  const { id_perfil, date1, date2 } = request.body
+
+  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c WHERE c.ID_campeon = p.ID_campeon AND p.ID_perfil = $1 AND p.fechayhora BETWEEN '2020-11-26' AND '2020-12-01' GROUP BY c.nombre ORDER BY count DESC LIMIT 1"
+  let values = [ id_perfil, date1, date2 ]
+  
+  pool.query(query, values)
+  .then(res => {
+    response.status(200).json(res.rows[0])
+    console.log("Campeon mas usado en cierto tiempo", date1, 'y', date2, champ, res.rows[0])
+  })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+/* [POST] Campeon mas popular en cierto tiempo */
+
+const mostUsedChampGeneral = (request, response) => {
+  
+  const { date1, date2 } = request.body
+
+  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c WHERE c.ID_campeon = p.ID_campeon AND p.fechayhora BETWEEN '2020-11-26' AND '2020-12-01' GROUP BY c.nombre ORDER BY count DESC LIMIT 1"
+  let values = [ date1, date2 ]
+  
+  pool.query(query, values)
+  .then(res => {
+    response.status(200).json(res.rows[0])
+    console.log("Campeon mas utilizado entre", date1, 'y', date2, res.rows[0])
+  })
   .catch(e => {
     response.status(500)
     console.error(e.stack)
@@ -155,5 +284,13 @@ module.exports = {
   createPartida,
 
   tiene,
-  dispone
+  dispone,
+
+  getAVGPartidasDates,
+  mostPlayedChampByPros,
+  mostUsedItemByChamp,
+  mostUsedRunesByChamp,
+  mostUsedChampbyProfile,
+  mostUsedChampGeneral
+
 }

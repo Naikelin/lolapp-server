@@ -43,12 +43,24 @@ app.get('/perfiles', db.getPerfiles)
 app.get('/perfil/:id', db.getPerfilById)
 app.post('/crear_perfil', db.createPerfil)
 
+/* Partidas */
+
 app.get('/partidas', db.getPartidas)
 app.get('/partida/:id', db.getPartidaById)
 app.post('/crear_partida', db.createPartida)
 
 app.post('/tiene', db.tiene)
 app.post('/dispone', db.dispone)
+
+/* Consultas */
+
+app.post('/avgp_dates', db.getAVGPartidasDates)
+app.post('/mostplayedchamp_bypros', db.mostPlayedChampByPros)
+app.post('/mostuseditem_bychamp', db.mostUsedItemByChamp)
+app.post('/mostusedrunes_bychamp', db.mostUsedRunesByChamp)
+app.post('/mostusedchamp_byprofile', db.mostUsedChampbyProfile)
+app.post('/mostusedchamp', db.mostUsedChampGeneral)
+
 
 /* socket */
 
