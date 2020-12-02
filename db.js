@@ -60,7 +60,7 @@ const createPerfil = (request, response) => {
 /* [GET] Se obtienen todas las partidas en un JSON */
 const getPartidas = (request, response) => {
 
-  let query = 'SELECT * FROM partida ORDER BY id_partida ASC'
+  let query = "SELECT id_partida, id_campeon, id_perfil, duracion, winorlose, fechayhora, to_char( fechayhora, 'DD-MM-YYYY') as dateformat FROM partida ORDER BY id_partida ASC"
   pool.query(query)
 .then(res => {
     response.status(200).json(res.rows)
