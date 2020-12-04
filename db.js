@@ -106,6 +106,21 @@ const createPartida = (request, response) => {
 
 }
 
+const campeones = (request, response) => {
+
+  let query = 'SELECT * FROM campeon'
+  pool.query(query)
+  .then(res => {
+    response.status(200).json(res.rows)
+    })
+  .catch(e => {
+    response.status(500)
+    console.error(e.stack)
+  })
+
+}
+
+
 /* [POST] Crear vinculos de la partida */
 const tiene = (request, response) => {
 
@@ -282,6 +297,8 @@ module.exports = {
   getPartidas,
   getPartidaById,
   createPartida,
+
+  campeones,
 
   tiene,
   dispone,

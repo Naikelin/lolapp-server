@@ -49,6 +49,9 @@ app.get('/partidas', db.getPartidas)
 app.get('/partida/:id', db.getPartidaById)
 app.post('/crear_partida', db.createPartida)
 
+/* Campeones */
+app.get('/campeones', db.campeones)
+
 app.post('/tiene', db.tiene)
 app.post('/dispone', db.dispone)
 
