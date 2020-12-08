@@ -3,8 +3,8 @@ const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'lolapp',
-  password: 'patesanjorge1',
-  port: 9000,
+  password: 'magdalena10',
+  port: 5432,
 })
 
   
@@ -251,7 +251,7 @@ const mostUsedChampbyProfile = (request, response) => {
 
   const { id_perfil, date1, date2 } = request.body
 
-  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c WHERE c.ID_campeon = p.ID_campeon AND p.ID_perfil = $1 AND p.fechayhora BETWEEN '2020-11-26' AND '2020-12-01' GROUP BY c.nombre ORDER BY count DESC LIMIT 1"
+  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c WHERE c.ID_campeon = p.ID_campeon AND p.ID_perfil = $1 AND p.fechayhora BETWEEN $2 AND $3 GROUP BY c.nombre ORDER BY count DESC LIMIT 1"
   let values = [ id_perfil, date1, date2 ]
   
   pool.query(query, values)
@@ -272,7 +272,7 @@ const mostUsedChampGeneral = (request, response) => {
   
   const { date1, date2 } = request.body
 
-  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c WHERE c.ID_campeon = p.ID_campeon AND p.fechayhora BETWEEN '2020-11-26' AND '2020-12-01' GROUP BY c.nombre ORDER BY count DESC LIMIT 1"
+  let query = "SELECT count(p.id_campeon), c.nombre FROM partida AS p, campeon AS c WHERE c.ID_campeon = p.ID_campeon AND p.fechayhora BETWEEN $1 AND $2 GROUP BY c.nombre ORDER BY count DESC LIMIT 1"
   let values = [ date1, date2 ]
   
   pool.query(query, values)

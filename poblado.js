@@ -4,8 +4,8 @@ const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'lolapp',
-  password: 'patesanjorge1',
-  port: 9000,
+  password: 'magdalena10',
+  port: 5432,
 })
 
 const urlchamps =
